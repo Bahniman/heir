@@ -1,0 +1,58 @@
+{
+  "club": "Meridian Club (mock)",
+  "club_mailbox": "meridian.mock@campus.example",
+  "handover_date": "2027-04-01",
+  "outgoing_team": [
+    {
+      "name": "Aditi",
+      "role": "Sponsorship lead",
+      "email": "aditi.2026@campus.example"
+    },
+    {
+      "name": "Neel",
+      "role": "Speakers lead",
+      "email": "neel.2026@campus.example"
+    },
+    {
+      "name": "Sana",
+      "role": "Logistics lead",
+      "email": "sana.2026@campus.example"
+    }
+  ],
+  "incoming_team": [
+    {
+      "name": "Ishaan",
+      "role": "Committee head",
+      "email": "ishaan.2027@campus.example"
+    },
+    {
+      "name": "Tara",
+      "role": "Speakers lead",
+      "email": "tara.2027@campus.example"
+    },
+    {
+      "name": "Kabir",
+      "role": "Sponsorship lead",
+      "email": "kabir.2027@campus.example"
+    },
+    {
+      "name": "Riya",
+      "role": "Logistics lead",
+      "email": "riya.2027@campus.example"
+    }
+  ],
+  "faculty_advisor": "faculty.advisor@campus.example",
+  "events": [
+    {
+      "name": "Summit 2026",
+      "date": "2026-08-08",
+      "tenure": "2026-27"
+    },
+    {
+      "name": "Summit 2027",
+      "date": "2027-08-07",
+      "tenure": "2027-28"
+    }
+  ],
+  "reply_sla_days": 4
+}

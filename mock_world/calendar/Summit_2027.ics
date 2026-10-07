@@ -1,0 +1,82 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Heir//Committee plan//EN
+BEGIN:VEVENT
+UID:T-001@heir
+DTSTART;VALUE=DATE:20270524
+SUMMARY:[Committee head (Ishaan)] Lock theme and panel topics
+DESCRIPTION:Basis: cycle template (no record), adjust if needed
+END:VEVENT
+BEGIN:VEVENT
+UID:T-009@heir
+DTSTART;VALUE=DATE:20270524
+SUMMARY:[Speakers lead (Tara)] Honour promise: invite Meera Nair
+DESCRIPTION:Basis: promise in mail:m12: "we will keep you posted for future events"
+END:VEVENT
+BEGIN:VEVENT
+UID:T-010@heir
+DTSTART;VALUE=DATE:20270527
+SUMMARY:[Sponsorship lead (Kabir)] Close inherited: Quillstone: A post-event report with attendance figures and photos
+DESCRIPTION:Basis: overdue since 2026-08-29; owner set by head
+END:VEVENT
+BEGIN:VEVENT
+UID:T-101@heir
+DTSTART;VALUE=DATE:20270527
+SUMMARY:[Unassigned] Close inherited: Student Affairs: settlement of accounts for Summit 2026
+DESCRIPTION:Basis: overdue since 2026-09-15; waiting for head to name an owner
+END:VEVENT
+BEGIN:VEVENT
+UID:T-011@heir
+DTSTART;VALUE=DATE:20270528
+SUMMARY:[Logistics lead (Riya)] Follow up: Request the venue
+DESCRIPTION:Basis: no reply to D-004 since 2027-05-20
+END:VEVENT
+BEGIN:VEVENT
+UID:T-002@heir
+DTSTART;VALUE=DATE:20270529
+SUMMARY:[Speakers lead (Tara)] Speaker outreach, round 1
+DESCRIPTION:Basis: 5 outreach lessons on record: warm intros and people who already speak at similar conclaves; avoid cold DMs. Do not cold-email Ravi Iyer again (two members, no reply in 2026)
+END:VEVENT
+BEGIN:VEVENT
+UID:T-012@heir
+DTSTART;VALUE=DATE:20270601
+SUMMARY:[Logistics lead (Riya)] Fallback: hold LH23 if LC2 is not confirmed
+DESCRIPTION:Basis: replan after silence; same lead time applies
+END:VEVENT
+BEGIN:VEVENT
+UID:T-006@heir
+DTSTART;VALUE=DATE:20270608
+SUMMARY:[Sponsorship lead (Kabir)] Renew the title sponsor
+DESCRIPTION:Basis: cycle template (no record), adjust if needed
+END:VEVENT
+BEGIN:VEVENT
+UID:T-003@heir
+DTSTART;VALUE=DATE:20270703
+SUMMARY:[Logistics lead (Riya)] Request the venue
+DESCRIPTION:Basis: 30-day lead time from mail:m06 (2026), plus 5-day buffer; reconfirm
+END:VEVENT
+BEGIN:VEVENT
+UID:T-004@heir
+DTSTART;VALUE=DATE:20270712
+SUMMARY:[Logistics lead (Riya)] Book guest house rooms
+DESCRIPTION:Basis: 21-day lead time from mail:m08 (2026), plus 5-day buffer; reconfirm
+END:VEVENT
+BEGIN:VEVENT
+UID:T-007@heir
+DTSTART;VALUE=DATE:20270717
+SUMMARY:[Speakers lead (Tara)] Confirm the final panel
+DESCRIPTION:Basis: cycle template (no record), adjust if needed
+END:VEVENT
+BEGIN:VEVENT
+UID:T-005@heir
+DTSTART;VALUE=DATE:20270726
+SUMMARY:[Logistics lead (Riya)] Order standees and banner
+DESCRIPTION:Basis: 7-day lead time from mail:m10 (2026), plus 5-day buffer; reconfirm
+END:VEVENT
+BEGIN:VEVENT
+UID:T-008@heir
+DTSTART;VALUE=DATE:20270828
+SUMMARY:[Sponsorship lead (Kabir)] Send sponsor post-event report
+DESCRIPTION:Basis: cycle template (no record), adjust if needed
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,7 @@
+__pycache__/
+*.sqlite
+exports/
+console/
+web/app_v1_dashboard.html
+web/app_v2_guided.html
+web/.impeccable/
