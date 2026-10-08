@@ -22,3 +22,4 @@ diff = [(a, b) for a, b in zip(pt, jt) if a != b]
 print("trace lines py/js:", len(pt), len(jt), "| differing:", len(diff))
 for a, b in diff[:6]: print("  py:", a, "\n  js:", b)
 print("MISMATCHES:", bad)
+sys.exit(1 if bad or diff or len(pt) != len(jt) else 0)  # non-zero so CI fails on any drift

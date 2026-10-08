@@ -1,5 +1,7 @@
 # Heir: a committee agent that carries open commitments across tenures
 
+[![tests](https://github.com/Bahniman/heir/actions/workflows/tests.yml/badge.svg)](https://github.com/Bahniman/heir/actions/workflows/tests.yml)
+
 Team Ghost Protocol, Manakriti 3.0 Agent Challenge ("Agents on Campus"), AI Nexus Club, XLRI.
 
 **Play it:** https://bahniman.github.io/heir/ (runs in the browser on a mock club's records).

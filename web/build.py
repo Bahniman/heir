@@ -5,7 +5,7 @@ tokens = pathlib.Path(os.environ.get("RISO_TOKENS", r"C:\Users\bahni\Downloads\P
 poster = pathlib.Path(os.environ.get("RISO_POSTER", r"C:\Users\bahni\Downloads\Exports\Design Systems\Riso Poster\project-kit\poster.css")).read_text(encoding="utf-8")
 r = lambda n: (here / n).read_text(encoding="utf-8")
 out = (r("app2.html").replace("/*TOKENS*/", tokens).replace("/*POSTER*/", poster).replace("/*WKCSS*/", r("wk.css"))
-       .replace("/*ENGINE*/", r("heir-engine.js")).replace("/*WALKJS*/", r("walk.js")).replace("/*GAMEJS*/", r("game.js")).replace("/*AIJS*/", r("ai.js")))
+       .replace("/*ENGINE*/", r("heir-engine.js")).replace("/*WALKJS*/", r("walk.js")).replace("/*GAMEJS*/", r("game.js")).replace("/*AIJS*/", r("ai.js")).replace("/*GLASSJS*/", r("glass.js")))
 (here / "heir-demo.html").write_text(out, encoding="utf-8")
 page = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">'
         '<meta name="description" content="Heir, a committee agent that keeps the promises a student club made after the people who made them have graduated. Play the handover, then run the club with it.">'

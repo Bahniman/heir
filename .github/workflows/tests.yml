@@ -1,0 +1,22 @@
+name: tests
+on: [push, pull_request]
+jobs:
+  agents:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - name: Language-model gate (fake model, no key)
+        run: python -m unittest test_model_gate -v
+      - name: Edge cases (disputes, stale drafts, phishing mail)
+        run: python test_edge_cases.py
+      - name: Browser engine matches the Python agents line for line
+        run: |
+          python heir.py demo > /dev/null
+          node web/parity_run.js /tmp/js.json
+          python web/parity_check.py /tmp/js.json
+      - name: 300 random playthroughs, no broken invariant
+        run: node web/fuzz.js

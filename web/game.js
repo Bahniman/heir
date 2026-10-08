@@ -749,6 +749,8 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") { document
 window.HeirGame = { land, hand, search, score, end, how, tab, pin: (k) => pins.add(k),
   get S() { return S; }, paint, toast, burst, setRight: (h) => { if ($("sideR")) $("sideR").innerHTML = h; }, sides, sheet, closeSheet, nameOf, fmt, esc };
 // the first screen waits (at most 1.5 s) for the web fonts, so its text does not re-wrap and shift once they arrive
-if (document.fonts && document.fonts.status !== "loaded") Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]).then(land);
+// fonts load lazily, so ask for the three the first screen uses rather than waiting on document.fonts.ready
+if (document.fonts && document.fonts.load) Promise.race([Promise.all(['800 40px "Bricolage Grotesque"', '400 20px "Newsreader"', '400 15px "Space Mono"', '700 12px "Space Mono"'].map((f) => document.fonts.load(f))).catch(() => {}),
+  new Promise((r) => setTimeout(r, 1500))]).then(land);
 else land();
 })();

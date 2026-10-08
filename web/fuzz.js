@@ -36,3 +36,4 @@ for (let g = 0; g < 300; g++) {
 }
 console.log("games 300, runs", runs, "stale approvals stopped", stale, "exceptions", errors, "problems", problems.length);
 [...new Set(problems.map(p => p.replace(/game \d+: /, "")))].slice(0, 8).forEach(p => console.log(" -", p));
+process.exit(errors || problems.length ? 1 : 0); // non-zero so CI fails on any broken invariant
