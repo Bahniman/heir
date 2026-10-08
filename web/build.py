@@ -9,7 +9,9 @@ out = (r("app2.html").replace("/*TOKENS*/", tokens).replace("/*POSTER*/", poster
 (here / "heir-demo.html").write_text(out, encoding="utf-8")
 page = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">'
         '<meta name="description" content="Heir, a committee agent that keeps the promises a student club made after the people who made them have graduated. Play the handover, then run the club with it.">'
-        '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2212%22 cy=%2216%22 r=%229%22 fill=%22%231f5cff%22/%3E%3Ccircle cx=%2220%22 cy=%2216%22 r=%229%22 fill=%22%23ff4fa3%22 style=%22mix-blend-mode:multiply%22/%3E%3C/svg%3E">'
+        '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2229%22 fill=%22%231f5cff%22 stroke=%22%231d1a16%22 stroke-width=%225%22/%3E%3Ctext x=%2232%22 y=%2244%22 font-family=%22Georgia,serif%22 font-style=%22italic%22 font-size=%2234%22 text-anchor=%22middle%22 fill=%22%23fffaf1%22%3Eb%3C/text%3E%3C/svg%3E">'
+        '<meta property="og:title" content="Heir"><meta property="og:description" content="Your seniors graduated. Their promises did not. Play the new club head, then run the club with a committee agent that keeps its commitments.">'
+        '<meta property="og:type" content="website"><meta property="og:url" content="https://bahniman.github.io/heir/"><meta name="twitter:card" content="summary_large_image">'
         '</head><body>' + out + "</body></html>")
 (here / "heir-demo-local.html").write_text(page, encoding="utf-8")
 (here.parent / "index.html").write_text(page, encoding="utf-8")  # GitHub Pages entry point
