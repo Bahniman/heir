@@ -33,8 +33,8 @@ function panel() {
   if (!trace.length && state === "idle") return "";
   const ex = trace[0] && /^Example run/.test(trace[0].text);
   const live = state === "run" ? (ex ? "▶ EXAMPLE RUN · replaying Claude's steps" : "● LIVE · Claude is reading your forward") : state === "done" ? (ex ? "✓ Example run, every step checked by code" : "✓ Read live by Claude, checked by code") : "Stopped";
-  return `<div class="ai-p"><span class="ai-live" id="aiLive">${live}</span><p class="ai-src">${esc(cur ? cur.src : "")}</p><ol id="aiTrace">${trace.map((t) => `<li class="${t.kind}">${esc(t.text)}</li>`).join("")}</ol><p class="ai-sum" id="aiSum">${esc(summary)}</p>
-    ${state === "run" ? `<button type="button" class="pk-btn" id="aiStop">Stop</button>` : ""}</div>`;
+  // Stop sits beside the live label: below the trace it slid down with every new line
+  return `<div class="ai-p"><div class="ai-hd"><span class="ai-live" id="aiLive">${live}</span>${state === "run" ? `<button type="button" class="pk-btn" id="aiStop">Stop</button>` : ""}</div><p class="ai-src">${esc(cur ? cur.src : "")}</p><ol id="aiTrace">${trace.map((t) => `<li class="${t.kind}">${esc(t.text)}</li>`).join("")}</ol><p class="ai-sum" id="aiSum">${esc(summary)}</p></div>`;
 }
 function show() { G().setRight(panel() + `<div id="aiRest"></div>`); draw(); if ($("aiStop")) $("aiStop").onclick = () => ctl && ctl.abort(); }
 

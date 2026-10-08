@@ -57,6 +57,7 @@ function go(name, html, keep) {
     Object.assign(g.style, { left: r.left + "px", top: r.top + "px", width: r.width + "px" });
     document.body.appendChild(g); setTimeout(() => g.remove(), 220);
   }
+  st.style.alignItems = ""; // undo the end screen's pin
   st.innerHTML = `<section class="scr enter${fade ? " after" : ""}">${html}</section>`;
   stagger(st.querySelector(".scr"), fade ? 110 : 0);
   if (!keep) window.scrollTo(0, 0);
@@ -124,7 +125,9 @@ function open(it) {
   const draw = () => {
     m.innerHTML = `<div class="paper"><h5>${esc(it.type)} · ${esc(it.who)}</h5><div class="body"><h4>${esc(it.title)}</h4>${it.lines ? it.lines.map((l) => `<div class="ln"><span>${esc(l.t)}</span>${pb(l.key)}</div>`).join("") : `<pre>${esc(it.body)}</pre>`}</div>
       <div class="row">${it.lines || it.hand ? "" : pb(it.key)}<button type="button" class="pk-btn" data-x>Close</button></div></div>`;
-    m.querySelectorAll("[data-p]").forEach((b) => (b.onclick = () => { const k = b.dataset.p; pins.has(k) ? pins.delete(k) : pins.add(k); draw(); drawPile(); }));
+    // pinning updates the button in place: redrawing the paper replayed its pop-in and reset a long email to the top
+    m.querySelectorAll("[data-p]").forEach((b) => (b.onclick = () => { const k = b.dataset.p, on = !pins.has(k); on ? pins.add(k) : pins.delete(k);
+      b.classList.toggle("on", on); b.textContent = on ? "Pinned" : "Pin"; drawPile(); }));
     m.querySelector("[data-x]").onclick = () => closeModal(m);
   };
   m.onclick = (e) => { if (e.target === m) closeModal(m); };
@@ -162,7 +165,9 @@ function phoneSwap(kind, update, origin) {
   const g = document.createElement("div"); g.className = "ph-ghost g-" + kind; g.dataset.mode = ph.dataset.mode;
   g.innerHTML = `<div class="ph-scr">${phs.innerHTML}</div>` + ($("tabs").innerHTML ? `<div class="ghost-tabs">${$("tabs").innerHTML}</div>` : "");
   g.querySelectorAll("[id]").forEach((e) => e.removeAttribute("id")); g.querySelectorAll(".tapme").forEach((e) => e.classList.remove("tapme"));
-  ph.querySelector(".sheet")?.remove();
+  const shOld = ph.querySelector(".sheet:not(.leaving)");
+  if (shOld) { shOld.querySelectorAll("[id]").forEach((e) => e.removeAttribute("id")); shOld.classList.add("leaving"); setTimeout(() => shOld.remove(), 200); }
+  // the ghost sits between #phs and #tabs while it fades; styles that look for "#phs followed by #tabs" use ~, not +
   ph.insertBefore(g, $("tabs")); g.firstChild.scrollTop = phs.scrollTop;
   update();
   const n = $("phs");
@@ -181,6 +186,7 @@ function device(o) {
       $("tabs").innerHTML = "";
       const p = $("phs"); p.className = "ph-scr"; p.innerHTML = o.phone || ""; p.scrollTop = 0;
     }, o.origin);
+    showPhone(true);
     return;
   }
   curScr = o.scr;
@@ -191,14 +197,28 @@ function device(o) {
         <div class="ph-scr" id="phs">${o.phone || ""}</div><div id="tabs"></div><div class="ph-home"></div></div></div>
       ${NOTE}</div>
     <aside class="side r" id="sideR">${o.right || ""}</aside></div>`);
-  fitPhone();
+  fitPhone(); showPhone();
 }
 // a real iPhone 15/16 screen is 393 x 852 points; draw it at that size and scale the whole device to fit the window
+// On a phone the unscaled device widened the layout viewport, so innerWidth read wider than the screen and the
+// device never shrank: use the document's client width, and fit the height too so the whole device is on screen.
+const vv = window.visualViewport;
+const viewW = () => Math.min(innerWidth, document.documentElement.clientWidth || innerWidth, vv ? Math.round(vv.width * vv.scale) : innerWidth);
+const viewH = () => Math.min(innerHeight, vv ? Math.round(vv.height * vv.scale) : innerHeight);
 function fitPhone() {
   const f = $("phFit"), ph = $("ph"); if (!f || !ph) return;
-  const W = 417, Ht = 876, small = innerWidth < 900;
-  const z = Math.min(1, (innerWidth - 32) / W, small ? 1 : (innerHeight - 215) / Ht);
+  const W = 417, Ht = 876, vw = viewW(), small = vw < 900;
+  const z = Math.min(1, (vw - 32) / W, (viewH() - (small ? 132 : 215)) / Ht);
   ph.style.transform = `scale(${z})`; f.style.width = W * z + "px"; f.style.height = Ht * z + "px";
+}
+// on a narrow screen the device comes first: put it just under the top bar instead of leaving its bottom off screen
+// smooth: the phone changed after a tap below it (Sleep, Weeks pass), so glide back up to it, but only if it is out of view
+function showPhone(smooth) {
+  if (viewW() >= 900) return;
+  const col = document.querySelector(".ph-col"), bar = document.querySelector(".g-top"); if (!col) return;
+  const top = col.getBoundingClientRect().top, bh = bar ? bar.offsetHeight : 0;
+  if (smooth && top >= bh - 4 && top < viewH() * 0.35) return;
+  window.scrollTo({ top: Math.max(0, top + scrollY - bh - 10), behavior: smooth && !REDUCED ? "smooth" : "auto" });
 }
 addEventListener("resize", fitPhone);
 const SB = `<svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
@@ -279,7 +299,7 @@ function morning() {
     phone: lockScreen(today, n, first ? first.title : ""),
     ctl: `<button type="button" class="pk-btn pri" id="b5">${last ? "See how it went →" : "Sleep · next morning →"}</button><button type="button" class="pk-btn ai-btn" id="aiBtn"><i>✦</i> Throw Heir a curveball · live AI</button>` });
   const unlock = () => phoneSwap("unlock", () => { locked = false; inApp = true; $("ph").dataset.mode = "app"; $("phTime").textContent = "7:03"; paint(); });
-  $("aiBtn").onclick = () => { if (!inApp) unlock(); aiTried = true; setTimeout(() => window.HeirAI && window.HeirAI.open(), inApp ? 0 : 380); };
+  $("aiBtn").onclick = () => { showPhone(true); if (!inApp) unlock(); aiTried = true; setTimeout(() => window.HeirAI && window.HeirAI.open(), inApp ? 0 : 380); };
   $("lkOpen").onclick = unlock;
   $("b5").onclick = sleep;
 }
@@ -317,7 +337,7 @@ function sideR() {
 }
 function swapIn(el, html) {
   if (!el || el.__h === html) return;
-  const had = el.__h !== undefined || el.innerHTML.trim() !== "";
+  const had = el.__h !== undefined || el.innerHTML.trim() !== "" || html.trim() !== ""; // content arriving in an empty slot fades in too
   el.innerHTML = html; el.__h = html;
   if (had && !REDUCED) { el.classList.remove("swapin"); void el.offsetWidth; el.classList.add("swapin"); }
 }
@@ -424,8 +444,33 @@ function ledgerView() {
     ${rows.map((r) => { const [c, st] = rowStatus(r); const src = srcName(r.evidence);
       return `<button type="button" class="lr ${openRow === r.id ? "open" : ""}" data-row="${r.id}"><span class="lr-t"><i>${r.id}</i><span class="lst ${c}">${esc(st)}</span></span><b>${esc(r.title)}</b>
         <small>${r.due ? `due ${fmt(r.due)} · ` : ""}${r.detail && r.kind === "lead_time" ? esc(r.detail) + " · " : ""}source: ${esc(src[0] || "file")}</small></button>
-        ${openRow === r.id ? `<div class="lr-x">${r.detail ? `<p>${esc(r.detail)}</p>` : ""}<p class="lr-src">Sources: ${src.map(esc).join(", ") || "file"}</p>${r.owner ? `<p>Owner on record: ${esc(r.owner)}</p>` : ""}
-          ${["open", "missing"].includes(r.status) ? `<button type="button" class="ph-wrong" data-lw="${r.id}">Something's not right?</button>` : ""}</div>` : ""}`; }).join("")}`;
+        ${openRow === r.id ? rowX(r) : ""}`; }).join("")}`;
+}
+const rowX = (r) => { const src = srcName(r.evidence);
+  return `<div class="lr-xw"><div class="lr-x">${r.detail ? `<p>${esc(r.detail)}</p>` : ""}<p class="lr-src">Sources: ${src.map(esc).join(", ") || "file"}</p>${r.owner ? `<p>Owner on record: ${esc(r.owner)}</p>` : ""}
+    ${["open", "missing"].includes(r.status) ? `<button type="button" class="ph-wrong" data-lw="${r.id}">Something's not right?</button>` : ""}</div></div>`; };
+// a ledger row opens and closes in place; re-rendering the list made the rows below snap
+function collapseRow(b) {
+  b.classList.remove("open"); const w = b.nextElementSibling;
+  if (!w || !w.classList.contains("lr-xw")) return;
+  if (REDUCED) { w.remove(); return; }
+  w.dataset.closing = "1"; // the opening's transitionend listener must not restore the height at the end of this collapse
+  w.style.height = w.offsetHeight + "px"; void w.offsetWidth;
+  w.style.transition = "height .22s ease, opacity .16s ease"; w.style.height = "0px"; w.style.opacity = "0";
+  setTimeout(() => w.remove(), 240);
+}
+function toggleRow(b) {
+  const id = b.dataset.row, cur = $("phs").querySelector(".lr.open");
+  if (cur) collapseRow(cur);
+  if (openRow === id) { openRow = null; return; }
+  openRow = id; b.classList.add("open");
+  b.insertAdjacentHTML("afterend", rowX(S.ledger.find((x) => x.id === id)));
+  const w = b.nextElementSibling;
+  w.querySelectorAll("[data-lw]").forEach((x) => (x.onclick = () => wrong(null, x.dataset.lw)));
+  if (REDUCED) return;
+  const h = w.scrollHeight; w.style.height = "0px"; w.style.opacity = "0"; void w.offsetWidth;
+  w.style.transition = "height .28s cubic-bezier(.2,.8,.2,1), opacity .22s ease"; w.style.height = h + "px"; w.style.opacity = "1";
+  w.addEventListener("transitionend", (e) => { if (e.propertyName === "height" && !w.dataset.closing) { w.style.height = ""; w.style.transition = ""; } });
 }
 function planView() {
   const ev = H.COMMITTEE.events[1], t = S.meta.today || "2027-04-01";
@@ -450,7 +495,7 @@ function logView() {
 function bindLedger() {
   const st = $("phs");
   st.querySelectorAll("[data-lf]").forEach((b) => (b.onclick = () => { lf = b.dataset.lf; openRow = null; paint.tab = null; paint(); $("phs").querySelectorAll(".lr").forEach((e, i) => { e.classList.add("rowin"); e.style.setProperty("--d", Math.min(i * 30, 300) + "ms"); }); }));
-  st.querySelectorAll("[data-row]").forEach((b) => (b.onclick = () => { openRow = openRow === b.dataset.row ? null : b.dataset.row; paint(); }));
+  st.querySelectorAll("[data-row]").forEach((b) => (b.onclick = () => toggleRow(b)));
   st.querySelectorAll("[data-lw]").forEach((b) => (b.onclick = () => wrong(null, b.dataset.lw)));
   if ($("goLedger")) $("goLedger").onclick = () => phoneSwap("fade", () => { tabNow = "ledger"; seenLedger = true; paint(); });
 }
@@ -473,7 +518,7 @@ function sheet(html) {
   const sh = document.createElement("div"); sh.className = "sheet"; sh.innerHTML = `<div class="sh-in">${html}</div>`;
   ph.appendChild(sh); void sh.offsetWidth; sh.classList.add("up"); return sh;
 }
-function closeSheet() { const sh = $("ph")?.querySelector(".sheet"); if (sh) { sh.classList.remove("up"); setTimeout(() => sh.remove(), 360); } busy = false; }
+function closeSheet() { const sh = $("ph")?.querySelector(".sheet:not(.leaving)"); if (sh) { sh.classList.remove("up"); setTimeout(() => sh.remove(), 360); } busy = false; }
 function edit(id) {
   const pre = document.querySelector(`[data-body="${id}"]`); if (!pre) return;
   pre.closest("details").open = true;
@@ -553,7 +598,8 @@ function end() {
       <div class="tile"><b>${taps}</b><span>taps from you, and nothing to keep in your head</span></div></div>
     <p class="lede">Next April you graduate too. What will the next head inherit?</p>
     <div class="act"><button class="pk-btn pri" id="b6" type="button">Write their handover</button><button class="pk-btn" id="b7" type="button">Play again</button></div><div id="doc"></div></div>`);
-  $("b6").onclick = () => { $("b6").remove(); handover(); };
+  // the button stays where it is (removing it pulled "Play again" up under the pointer)
+  $("b6").onclick = () => { const b = $("b6"); b.disabled = true; b.textContent = "Their handover is below ↓"; handover(); };
   $("b7").onclick = () => { curScr = null; land(); };
 }
 function handover() {
@@ -569,10 +615,17 @@ function handover() {
   L.push("", "## Rules"); by("policy").forEach((r) => L.push(`- ${r.title}${r.status === "superseded" ? " (replaced)" : ""}`));
   L.push("", "## Logins"); by("account").forEach((r) => L.push(`- ${r.title}: ${r.owner || "unknown"}`));
   L.push("", "## People"); by("contact").forEach((r) => L.push(`- ${r.title}: ${r.status}`));
+  // the stage centres short screens; pin this one where it sits before it grows, or the whole screen jumps up
+  const st = $("stage"), sc = st.querySelector(".scr");
+  if (sc && getComputedStyle(st).alignItems !== "start") {
+    const off = sc.getBoundingClientRect().top - st.getBoundingClientRect().top - parseFloat(getComputedStyle(st).paddingTop);
+    st.style.alignItems = "start"; sc.style.marginTop = Math.max(0, off) + "px";
+  }
   $("doc").innerHTML = `<div class="two"><div class="paper"><h5>What you got · 8 lines</h5><pre>${esc(HANDOVER)}</pre></div><div class="paper" style="box-shadow:6px 6px 0 var(--pink)"><h5>What they get · ${L.length} lines, each with a source</h5><pre>${esc(L.join("\n"))}</pre></div></div>
     <p class="final">This time, the next head starts with <em>all of it</em>.</p><div class="act" style="justify-content:center"><button class="pk-btn" data-how="phone" type="button">How it reaches your phone</button><button class="pk-btn" data-how="wrong" type="button">When Heir gets it wrong</button><button class="pk-btn" data-how="why" type="button">Why we built it</button></div>`;
   document.querySelectorAll("[data-how]").forEach((b) => (b.onclick = () => how(b.dataset.how)));
-  $("doc").scrollIntoView({ behavior: "smooth", block: "start" });
+  stagger($("doc"), 60);
+  setTimeout(() => $("doc").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" }), 120);
 }
 
 // ---------- quiet guidance: a hint appears only after the visitor has been idle for a few seconds,
@@ -609,11 +662,11 @@ function placeCoach() {
   if (!document.body.contains(coachT)) { hideCoach(); return; }
   const r = coachT.getBoundingClientRect(), box = coachT.closest("#phs"), w = coachEl.offsetWidth, h = coachEl.offsetHeight, gap = 14;
   const inPhone = !!coachT.closest(".dev") || coachT.classList.contains("card");
-  let off = r.bottom < 70 ? "up" : r.top > innerHeight - 20 ? "down" : "";
-  if (box && !off) { const b = box.getBoundingClientRect(); if (r.bottom < b.top + 10 || r.top > b.bottom - 10) off = r.top > b.bottom - 10 ? "down" : "up"; }
+  let off = r.bottom < 70 ? "up" : r.top > innerHeight - 20 ? "down" : "", inBox = false;
+  if (box && !off) { const b = box.getBoundingClientRect(); if (r.bottom < b.top + 10 || r.top > b.bottom - 10) { off = r.top > b.bottom - 10 ? "down" : "up"; inBox = true; } }
   coachEl.classList.toggle("edge", !!off);
   if (off) { // the target is out of view: say where it is, at the edge of the window, without moving anything
-    coachEl.textContent = (off === "down" ? "↓ " : "↑ ") + candTxt + (box ? " (scroll the phone)" : " (scroll)");
+    coachEl.textContent = (off === "down" ? "↓ " : "↑ ") + candTxt + (inBox ? " (scroll the phone)" : " (scroll)");
     moveCoach(Math.max(8, innerWidth / 2 - w / 2), off === "down" ? innerHeight - h - 18 : 76); coachEl.dataset.side = "none"; return;
   }
   if (coachEl.textContent !== candTxt) coachEl.textContent = candTxt;
@@ -642,7 +695,7 @@ function nextStep() {
   if ($("drawer").classList.contains("open")) return setCand(null);
   const md = q(".modal");
   if (md) { const pin = md.querySelector(".pin:not(.on)"); return setCand(pin || md.querySelector("[data-x]"), pin ? "Does the club still owe this? Pin it" : "Close, then open another file"); }
-  const sh = q("#ph .sheet");
+  const sh = q("#ph .sheet:not(.leaving)");
   if (sh) {
     if (q("#fwTxt")) return q("#fwTxt").value.trim() ? setCand(q("#fwGo"), "Send it to Heir") : setCand(q("[data-pr]"), "Pick a message, or paste your own");
     if (q("#t3")) return setCand(q("#t3"), "Tap Add to Home Screen");
@@ -695,5 +748,7 @@ $("howClose").onclick = () => { $("drawer").classList.remove("open"); $("drawer"
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") { document.querySelectorAll(".modal").forEach(closeModal); $("howClose").click(); } });
 window.HeirGame = { land, hand, search, score, end, how, tab, pin: (k) => pins.add(k),
   get S() { return S; }, paint, toast, burst, setRight: (h) => { if ($("sideR")) $("sideR").innerHTML = h; }, sides, sheet, closeSheet, nameOf, fmt, esc };
-land();
+// the first screen waits (at most 1.5 s) for the web fonts, so its text does not re-wrap and shift once they arrive
+if (document.fonts && document.fonts.status !== "loaded") Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]).then(land);
+else land();
 })();

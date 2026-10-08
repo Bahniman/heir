@@ -217,7 +217,6 @@ button{font:inherit}
 .spn{border:2px dashed var(--ink);border-radius:8px;padding:12px 14px;background:var(--card)}
 .spn-k{display:block;font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--blue-text);margin-bottom:4px}
 .spn p{margin:0;font:15.5px/1.5 var(--serif);color:var(--body)}
-.tapme{position:relative;animation:tap 1.5s ease-out infinite}
 @keyframes tap{0%{box-shadow:0 0 0 0 rgba(255,79,163,.75)}70%{box-shadow:0 0 0 14px rgba(255,79,163,0)}100%{box-shadow:0 0 0 0 rgba(255,79,163,0)}}
 /* mail app */
 .ma{font-size:13px;color:#111}.ma-h{font-size:24px;font-weight:800;padding:4px 4px 10px}
@@ -386,7 +385,7 @@ button{font:inherit}
 .coach[data-side="right"]::after{left:-8px;top:50%;transform:translateY(-50%) rotate(135deg)}
 .coach[data-side="left"]::after{right:-8px;top:50%;transform:translateY(-50%) rotate(-45deg)}
 @keyframes cbob{50%{transform:translateX(3px)}}
-.tapme{outline:3px solid #ff4fa3!important;outline-offset:3px;animation:tap 1.5s ease-out infinite}
+.tapme{outline:3px solid #ff4fa3!important;outline-offset:3px}
 .ph-hd{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;min-height:34px}
 .nextbox{display:inline-flex;align-items:center;gap:8px;border:2px solid #1d1a16;border-radius:99px;background:#ff4fa3;color:#1d1a16;padding:4px 14px 4px 6px;box-shadow:2px 2px 0 #1d1a16;animation:cbob 1.6s ease-in-out infinite}
 .nextbox[hidden]{display:none}
@@ -413,7 +412,10 @@ button{font:inherit}
 .nextbox[hidden]{display:inline-flex;visibility:hidden}
 .side .ctl{margin-top:22px}
 .side .ctl:empty{display:none}
-@media (max-width:900px){.side.l{display:flex;flex-direction:column}.side .ctl{order:-1;margin:0 0 18px}}
+/* the controls sit above the day story at every width: the story changes length each morning, and a button below it
+   moved out from under the pointer between taps */
+.side.l{display:flex;flex-direction:column}.side .ctl{order:-1;margin:0 0 22px}
+@media (max-width:900px){.side .ctl{margin:0 0 18px}}
 
 
 /* =================== Liquid Glass phone UI (iOS 26 language) ===================
@@ -436,7 +438,7 @@ button{font:inherit}
 .ph .tabbar svg{width:24px;height:24px}
 .ph .tabbar b{top:2px;right:18%}
 .ph[data-mode="app"] .ph-scr{padding-bottom:110px;-webkit-mask-image:linear-gradient(#000 0,#000 calc(100% - 70px),transparent);mask-image:linear-gradient(#000 0,#000 calc(100% - 70px),transparent)}
-.ph[data-mode="app"] .ph-scr:has(+ #tabs:empty){padding-bottom:24px;-webkit-mask-image:none;mask-image:none}
+.ph[data-mode="app"] .ph-scr:has(~ #tabs:empty){padding-bottom:24px;-webkit-mask-image:none;mask-image:none}
 /* content layer: calm, near-opaque cards with concentric radii */
 .ph .ph-card,.ph .lr,.ph .pr,.ph .ma-open{background:rgba(255,255,255,.86);border:1px solid rgba(255,255,255,.9);border-radius:22px;box-shadow:0 1px 2px rgba(31,41,72,.05),0 6px 18px rgba(31,41,72,.06)}
 .ph .lr.open{border-radius:22px 22px 0 0}.ph .lr-x{background:rgba(255,255,255,.86);border-radius:0 0 22px 22px}
@@ -482,7 +484,7 @@ button{font:inherit}
 .coach.edge{border-radius:99px}.coach.edge::after{display:none}
 .nextbox{animation:none;background:var(--card);color:var(--ink);border:1.5px solid var(--line-2);box-shadow:none}
 .nextbox span{background:var(--ink);color:var(--paper)}
-.tapme{outline:2.5px solid #0a84ff!important;outline-offset:3px;animation:none!important;box-shadow:0 0 0 6px rgba(10,132,255,.18)!important}
+.tapme{outline:2.5px solid #0a84ff!important;outline-offset:3px;box-shadow:0 0 0 6px rgba(10,132,255,.18)!important}
 
 
 /* =================== Motion system ===================
@@ -528,7 +530,9 @@ button:active:not(:disabled),.pk-btn:active{transform:scale(.96)}
 .ph .ph-card.gone{transition:transform .26s cubic-bezier(.4,0,1,1),opacity .2s ease-in;transform:translateX(105%);opacity:0}
 .ph .ph-card.collapse{transition:transform .26s cubic-bezier(.4,0,1,1),opacity .2s ease-in,height .32s cubic-bezier(.3,0,.2,1),margin .32s cubic-bezier(.3,0,.2,1),padding .32s cubic-bezier(.3,0,.2,1),border-width .32s;height:0!important;margin-bottom:0!important;padding-top:0!important;padding-bottom:0!important;border-width:0!important}
 .ph .lr.rowin{animation:rise .35s var(--e-out) both;animation-delay:var(--d,0ms)}
-.ph .lr-x{animation:infade .22s ease both}
+.ai-hd{display:flex;align-items:center;justify-content:space-between;gap:10px}.ai-hd .pk-btn{min-height:34px;padding:0 14px;margin:0}
+.ph .tabbar{animation:tabin .3s ease .12s both}@keyframes tabin{from{opacity:0;transform:translateY(8px)}}
+.lr-xw{overflow:hidden}.ph .lr{transition:border-radius .2s ease,margin-bottom .22s ease}
 /* tab bar: the selected pill glides between tabs */
 .ph .tabbar{position:relative}
 .ph .tabbar::before{content:"";position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px) / 4);transform:translateX(calc(100% * var(--ti,0)));border-radius:999px;background:rgba(255,255,255,.75);box-shadow:inset 0 1px 0 #fff,0 2px 8px rgba(31,41,72,.1);transition:transform .4s cubic-bezier(.3,1.2,.5,1);will-change:transform}
@@ -537,6 +541,8 @@ button:active:not(:disabled),.pk-btn:active{transform:scale(.96)}
 /* sheets: iOS curve */
 .ph .sh-in{transition:transform .42s var(--e-ios)}
 .ph .sheet{transition:background .3s ease}
+/* a sheet open when the phone changes screen fades with the old screen instead of vanishing */
+.ph .sheet.leaving{opacity:0;transition:opacity .16s ease-in;pointer-events:none}
 /* side panels: changed content rises in; old news lines no longer replay on every tap */
 .news li,.rcpt,.outw{animation:none}
 .swapin > *{animation:rise .45s var(--e-out) both}
@@ -557,8 +563,8 @@ button:active:not(:disabled),.pk-btn:active{transform:scale(.96)}
 .ph-ghost:not(.g-unlock) *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .nextbox{opacity:0;transform:translateY(-4px);transition:opacity .25s ease,transform .3s var(--e-out);visibility:visible}
 .nextbox.on{opacity:1;transform:none}
-.tapme{animation:ringin .35s var(--e-out) both!important}
-@keyframes ringin{from{outline-color:rgba(10,132,255,0);box-shadow:0 0 0 0 rgba(10,132,255,0)}}
+/* the hint ring never sets `animation`: overriding a target's own animation (the home-screen icon's pop) restarts it
+   when the hint is removed on press, so the icon shrank under the pointer and the tap missed */
 @media (prefers-reduced-motion:reduce){.rise,.ph-scr[class*="in-"],.ph .ph-card.new,.swapin > *{animation:none!important}.coach,.nextbox{transition:none}}
 
 /* how-it-works drawer */
