@@ -171,8 +171,11 @@ function phoneSwap(kind, update, origin) {
   const shOld = ph.querySelector(".sheet:not(.leaving)");
   if (shOld) { shOld.querySelectorAll("[id]").forEach((e) => e.removeAttribute("id")); shOld.classList.add("leaving"); setTimeout(() => shOld.remove(), 200); }
   // the ghost sits between #phs and #tabs while it fades; styles that look for "#phs followed by #tabs" use ~, not +
+  g.querySelectorAll(".tab-mini").forEach((e) => e.remove());
   ph.insertBefore(g, $("tabs")); g.firstChild.scrollTop = phs.scrollTop;
   update();
+  // the real tab bar is still there after the update (a tab switch): a faded copy of it would only double it
+  if ($("tabs") && $("tabs").querySelector(".tabbar")) g.querySelectorAll(".ghost-tabs").forEach((e) => e.remove());
   const n = $("phs");
   n.classList.remove("in-push", "in-fade", "in-launch", "in-unlock", "in-lock"); void n.offsetWidth;
   if (origin) n.style.transformOrigin = origin; else n.style.transformOrigin = "";
