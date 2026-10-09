@@ -266,24 +266,25 @@ function setup3() {
   bindSkip();
 }
 function setup4() {
-  // generic glyphs on coloured tiles: they read as "a phone's home screen" without copying anyone's real icons
+  // the home screen is printed in the page's own inks: frosted tiles with ink glyphs; only Heir is a solid tile, so the eye finds it
   const I = (p) => `<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+  const P = "#ff4fa3", B = "#1f5cff", K = "#1d1a16", Y = "#e0a800";
   const GL = {
-    Maps: ["#34c77b,#1f9d5c", I('<path d="M12 21s-6-5.6-6-10a6 6 0 1 1 12 0c0 4.4-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>')],
-    Photos: ["#fff,#f2f2f7", I('<g stroke="none"><circle cx="12" cy="7.2" r="3.2" fill="#ffcc00"/><circle cx="16.6" cy="10.6" r="3.2" fill="#ff9500" opacity=".85"/><circle cx="14.8" cy="15.8" r="3.2" fill="#ff3b30" opacity=".8"/><circle cx="9.2" cy="15.8" r="3.2" fill="#af52de" opacity=".8"/><circle cx="7.4" cy="10.6" r="3.2" fill="#0a84ff" opacity=".8"/></g>')],
-    Notes: ["#fff7c2,#ffe36b", I('<path d="M6 8h12M6 12h12M6 16h8" stroke="#8a6d00"/>')],
-    Clock: ["#1c1c1e,#000", I('<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2" stroke="#ff9f0a"/>')],
-    Calendar: ["#fff,#f2f2f7", `<span class="cal"><b>Thu</b>20</span>`],
-    Weather: ["#5ac8fa,#1f6fff", I('<circle cx="9" cy="9" r="3.4" fill="#ffd60a" stroke="none"/><path d="M8 18h9a3.2 3.2 0 0 0 0-6.4 4.4 4.4 0 0 0-8.4 1.2A2.6 2.6 0 0 0 8 18z" fill="#fff" stroke="none"/>')],
-    Settings: ["#aeaeb2,#6e6e73", I('<circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M6 18l1.6-1.6M16.4 7.6 18 6"/>')],
+    Maps: [P, I('<path d="M12 21s-6.2-5.7-6.2-10.2a6.2 6.2 0 1 1 12.4 0C18.2 15.3 12 21 12 21z"/><circle cx="12" cy="10.8" r="2.3"/>')],
+    Photos: [B, I('<circle cx="12" cy="7.6" r="3"/><circle cx="16.2" cy="12" r="3"/><circle cx="12" cy="16.4" r="3"/><circle cx="7.8" cy="12" r="3"/>')],
+    Notes: [Y, I('<rect x="5.5" y="4.5" width="13" height="15" rx="2.5"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/>')],
+    Clock: [K, I('<circle cx="12" cy="12" r="7.8"/><path d="M12 7.6V12l3 1.9"/>')],
+    Calendar: [P, `<span class="cal"><b>Thu</b>20</span>`],
+    Weather: [B, I('<circle cx="9" cy="9.2" r="3"/><path d="M8.3 18.5h8.4a3.1 3.1 0 0 0 .2-6.2 4.3 4.3 0 0 0-8.1 1.3 2.5 2.5 0 0 0-.5 4.9z"/>')],
+    Settings: [K, I('<circle cx="12" cy="12" r="2.8"/><path d="M12 3.6v2.3M12 18.1v2.3M3.6 12h2.3M18.1 12h2.3M6.1 6.1l1.6 1.6M16.3 16.3l1.6 1.6M6.1 17.9l1.6-1.6M16.3 7.7l1.6-1.6"/>')],
   };
   const DOCK = {
-    Phone: ["#5ee07a,#28c745", I('<path d="M7.5 4.5 10 7.6 8.7 9.8a10 10 0 0 0 5.5 5.5l2.2-1.3 3.1 2.5-1.2 2.6c-.4.8-1.3 1.2-2.2 1A15 15 0 0 1 4 7.9c-.2-.9.2-1.8 1-2.2z" fill="#fff" stroke="none"/>')],
-    Mail: ["#5ac8fa,#0a84ff", I('<rect x="4" y="6.5" width="16" height="11" rx="2"/><path d="m4.8 7.5 7.2 5.5 7.2-5.5"/>')],
-    Camera: ["#d1d1d6,#8e8e93", I('<rect x="3.5" y="7" width="17" height="11.5" rx="3"/><circle cx="12" cy="12.7" r="3.4"/><path d="M9 7l1.2-2h3.6L15 7"/>')],
-    Music: ["#ff6482,#ff2d55", I('<path d="M10 17.5V6.5l8-1.8v10.5"/><circle cx="8" cy="17.5" r="2.2" fill="#fff"/><circle cx="16" cy="15.2" r="2.2" fill="#fff"/>')],
+    Phone: [B, I('<path d="M8 4.6 10.3 7.5 9 9.7a10 10 0 0 0 5.3 5.3l2.2-1.3 2.9 2.3-1 2.4c-.4.8-1.3 1.2-2.1 1A14.6 14.6 0 0 1 4.6 8.1c-.2-.8.2-1.7 1-2.1z"/>')],
+    Mail: [P, I('<rect x="4" y="6.5" width="16" height="11" rx="2.2"/><path d="m4.8 7.6 7.2 5.4 7.2-5.4"/>')],
+    Camera: [K, I('<rect x="3.6" y="7.2" width="16.8" height="11.3" rx="3"/><circle cx="12" cy="12.8" r="3.2"/><path d="M9 7.2l1.3-2.1h3.4L15 7.2"/>')],
+    Music: [Y, I('<path d="M10 17.4V6.6l8-1.8v10.4"/><circle cx="8" cy="17.4" r="2.1"/><circle cx="16" cy="15.2" r="2.1"/>')],
   };
-  const tile = (a, [bg, glyph]) => `<span><i class="gi" style="--g:linear-gradient(160deg,${bg})">${glyph}</i>${a}</span>`;
+  const tile = (a, [c, glyph]) => `<span><i class="gi" style="--c:${c}">${glyph}</i>${a}</span>`;
   device({ scr: "setup", chip: "Home screen", time: "18:42", mode: "home", anim: "fade",
     left: setH(4, "Heir is now an app on your phone", "It's the same website, now full screen with its own icon. Tap it to open."),
     phone: `<div class="home"><div class="hg">${Object.entries(GL).map(([a, v]) => tile(a, v)).join("")}<button type="button" class="hz" id="t4"><i><b></b></i>Heir</button></div>

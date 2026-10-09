@@ -711,28 +711,36 @@ sup a{color:var(--blue-text);text-decoration:none;font:700 10px var(--mono);marg
 /* the progress dots sit at the true centre of the bar, whatever is on either side */
 @media (min-width:561px){.g-top{position:fixed}.g-dots{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0}.g-ctl{margin-left:auto}}
 
-/* ---------- home screen: wallpaper, real-looking icons, a glass dock ---------- */
-[data-mode="home"]{background:
-  radial-gradient(70% 45% at 18% 12%,rgba(255,143,196,.95),transparent 70%),
-  radial-gradient(60% 40% at 92% 34%,rgba(255,216,79,.75),transparent 70%),
-  radial-gradient(90% 60% at 30% 78%,rgba(31,92,255,.9),transparent 72%),
-  radial-gradient(70% 50% at 95% 95%,rgba(255,79,163,.7),transparent 70%),
-  linear-gradient(170deg,#7d5cff 0%,#3b3fd8 55%,#1a2a8f 100%)!important;background-size:100% 852px!important;background-position:0 -54px!important}
+/* ---------- home screen: a Riso print as the wallpaper (ink circles overprinting on paper, halftone dots),
+   frosted tiles with ink glyphs, and Heir as the one solid tile ---------- */
+.ph[data-mode="home"]{background-color:#f3ecdf!important;background-image:
+  radial-gradient(rgba(29,26,22,.11) 1px,transparent 1.5px),
+  radial-gradient(circle 190px at 2% 12%,#ff4fa3 99%,transparent 100%),
+  radial-gradient(circle 250px at 104% 76%,#1f5cff 99%,transparent 100%),
+  radial-gradient(circle 110px at 80% 40%,#ffd84f 99%,transparent 100%),
+  radial-gradient(circle 160px at 22% 96%,#ffd84f 99%,transparent 100%)!important;
+  background-size:7px 7px,100% 100%,100% 100%,100% 100%,100% 100%!important;background-position:0 0!important;background-repeat:repeat,no-repeat,no-repeat,no-repeat,no-repeat!important;
+  background-blend-mode:multiply!important}
+.ph[data-mode="home"] .ph-top{color:#1d1a16}
+.ph[data-mode="home"] .ph-top svg{fill:#1d1a16}
+.ph[data-mode="home"] .ph-home{background:#1d1a16}
 [data-mode="home"] .ph-scr{position:static}
 .ph .home{min-height:100%;display:flex;flex-direction:column}
-.ph .hg span i.gi{background:var(--g)!important;border:0!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;display:grid;place-items:center;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.12),0 4px 10px rgba(20,20,60,.22)!important}
-.ph .gi svg{width:62%;height:62%;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.ph .gi .cal{display:flex;flex-direction:column;align-items:center;line-height:1;font:300 30px -apple-system,system-ui,sans-serif;color:#1c1c1e;margin-top:2px}
-.ph .gi .cal b{font:600 10.5px -apple-system,system-ui,sans-serif;color:#ff3b30;margin-bottom:3px}
-/* Heir's own icon: the page's brand mark, two overlapping inks on paper */
-.hz i{background:#fffaf1!important;box-shadow:inset 0 1px 0 #fff,0 6px 16px rgba(0,0,0,.28)!important;display:grid;place-items:center}
-.hz i b{width:26px;height:26px;border-radius:50%;background:#ff4fa3;box-shadow:13px 0 0 #1f5cff;margin-right:13px;mix-blend-mode:multiply}
-.ph .dock{margin:auto 2px 26px;display:grid;grid-template-columns:repeat(4,1fr);justify-items:center;padding:14px 10px;border-radius:32px;
-  background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.45);-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 10px 30px rgba(10,20,80,.25)}
-.ph .dock span{display:block}.ph .dock span i.gi{width:62px;height:62px;border-radius:15px}
-
+.ph .home .hg span,.ph .home .hz{color:#1d1a16;font-weight:600;text-shadow:0 0 3px #fffaf1,0 0 6px rgba(255,250,241,.9),0 1px 0 #fffaf1}
+.ph .home i.gi{width:62px;height:62px;border-radius:16px;display:grid;place-items:center;position:relative;overflow:hidden;
+  background:rgba(255,250,241,.62)!important;border:1px solid rgba(255,255,255,.85)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(160%)!important;backdrop-filter:blur(14px) saturate(160%)!important;
+  box-shadow:inset 0 1px 0 #fff,inset 0 -10px 18px rgba(255,255,255,.25),0 6px 14px rgba(29,26,22,.16)!important}
+.ph .home i.gi::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,.7),rgba(255,255,255,0) 45%);pointer-events:none}
+.ph .home .gi svg{width:58%;height:58%;fill:none;stroke:var(--c);stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;position:relative}
+.ph .home .gi .cal{position:relative;display:flex;flex-direction:column;align-items:center;line-height:1;font:300 29px -apple-system,system-ui,sans-serif;color:#1d1a16;margin-top:1px}
+.ph .home .gi .cal b{font:700 10px -apple-system,system-ui,sans-serif;color:var(--c);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.hz i{background:#1d1a16!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 8px 18px rgba(29,26,22,.35)!important;display:grid;place-items:center}
+.hz i b{width:24px;height:24px;border-radius:50%;background:#ff4fa3;box-shadow:12px 0 0 #1f5cff;margin-right:12px}
+.ph .dock{margin:auto 4px 22px;display:grid;grid-template-columns:repeat(4,1fr);justify-items:center;padding:13px 8px;border-radius:34px;
+  background:rgba(255,250,241,.38);border:1px solid rgba(255,255,255,.75);-webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 12px 30px rgba(29,26,22,.18)}
+.ph .dock span{display:block}
 /* ---------- page background: three faint ink glows drifting very slowly behind everything (about a minute per cycle).
    Low opacity so text contrast is unchanged; off for reduced motion and when printing. ---------- */
 body::before{content:"";position:fixed;inset:-25vmax;z-index:-1;pointer-events:none;
