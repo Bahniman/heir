@@ -82,11 +82,11 @@ function countUp(el, to, ms) {
   const step = (t) => { const p = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - p, 3); el.textContent = fmtN(to * e); if (p < 1) requestAnimationFrame(step); };
   el.textContent = "0"; requestAnimationFrame(step);
 }
-function closeModal(m) { if (!m || m.classList.contains("out")) return; m.classList.add("out"); setTimeout(() => m.remove(), 180); }
+function closeModal(m) { if (!m || m.classList.contains("out")) return; m.classList.add("out"); if (coachT && m.contains(coachT)) hideCoach(true); /* no hint left floating where the window was */ setTimeout(() => m.remove(), 180); }
 function toast(m, good) { const t = $("toast");
   // a new message while one is showing: let the old one drop away first instead of resizing it in place
   if (t.classList.contains("show") && t.textContent !== m && !REDUCED) { t.className = "toast"; clearTimeout(toast.h); clearTimeout(toast.n); toast.n = setTimeout(() => toast(m, good), 200); return; }
-  t.textContent = m; t.className = "toast show" + (good ? " good" : ""); clearTimeout(toast.h); toast.h = setTimeout(() => (t.className = "toast"), 2600); }
+  t.textContent = m; document.documentElement.classList.add("toasting"); clearTimeout(toast.u); toast.u = setTimeout(() => document.documentElement.classList.remove("toasting"), 2900); t.className = "toast show" + (good ? " good" : ""); clearTimeout(toast.h); toast.h = setTimeout(() => (t.className = "toast"), 2600); }
 function burst() { const b = document.createElement("div"); b.className = "burst"; b.innerHTML = Array.from({ length: 28 }, (_, i) => `<i style="--a:${i * 360 / 28}deg;--d:${90 + (i % 5) * 34}px;--c:${["#ff4fa3", "#1f5cff", "#ffe14f", "#1d1a16"][i % 4]}"></i>`).join(""); document.body.appendChild(b); setTimeout(() => b.remove(), 1200); }
 
 // 0. landing
@@ -214,7 +214,7 @@ const viewH = () => Math.min(innerHeight, vv ? Math.round(vv.height * vv.scale) 
 function fitPhone() {
   const f = $("phFit"), ph = $("ph"); if (!f || !ph) return;
   const W = 417, Ht = 876, vw = viewW(), small = vw < 900;
-  const z = Math.min(1, (vw - 32) / W, (viewH() - (small ? 132 : 215)) / Ht);
+  const z = Math.min(1, (vw - 32) / W, (viewH() - (small ? 178 : 215)) / Ht); // small screens: room for the header and the chip strip, so the bottom of the phone stays on screen
   ph.style.transform = `scale(${z})`; f.style.width = W * z + "px"; f.style.height = Ht * z + "px";
 }
 // on a narrow screen the device comes first: put it just under the top bar instead of leaving its bottom off screen
@@ -726,7 +726,9 @@ function placeCoach() {
   // never sit on another control or on text: score each side by what it would cover (controls count far more than text), take the least
   const vis = (e) => e !== coachT && !coachT.contains(e) && !e.contains(coachT) && e.getClientRects().length && getComputedStyle(e).visibility !== "hidden";
   const rects = (sel) => [...document.querySelectorAll(sel)].filter(vis).map((e) => e.getBoundingClientRect()).filter((q) => q.width && q.bottom > 0 && q.top < innerHeight);
-  const ctrls = rects("button, a[href], .card, summary, .dchip, .nextbox.on"), texts = rects("h1, h2, h3, p, .k, .stamp, li, .tile");
+  const ctrls = rects("button, a[href], .card, summary, .dchip, .nextbox.on"), texts = rects("h1, h2, h3, p, .k, .stamp, li, .tile, .clock span, .clock b");
+  const own = coachT.getBoundingClientRect(); // covering the very thing it points at is the worst place of all
+  ctrls.push(own, own, own);
   const over = (px, py, list) => list.reduce((sum, q) => sum + Math.max(0, Math.min(px + w, q.right + 4) - Math.max(px, q.left - 4)) * Math.max(0, Math.min(py + h, q.bottom + 4) - Math.max(py, q.top - 4)), 0);
   const cost = (px, py) => (py < 60 || py + h > innerHeight - 6 ? 1e9 : 0) + over(px, py, ctrls) * 10 + over(px, py, texts);
   let best = cost(x, y);

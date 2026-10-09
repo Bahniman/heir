@@ -744,6 +744,16 @@ sup a{color:var(--blue-text);text-decoration:none;font:700 10px var(--mono);marg
 /* the fading copy of the home screen wears the same print, so leaving it doesn't flash the old gradient */
 .ph-ghost[data-mode="home"]{background-color:#f3ecdf!important;background-image:radial-gradient(rgba(29,26,22,.11) 1px,transparent 1.5px),radial-gradient(circle 190px at 2% 12%,#ff4fa3 99%,transparent 100%),radial-gradient(circle 250px at 104% 76%,#1f5cff 99%,transparent 100%),radial-gradient(circle 110px at 80% 40%,#ffd84f 99%,transparent 100%),radial-gradient(circle 160px at 22% 96%,#ffd84f 99%,transparent 100%)!important;
   background-size:7px 7px,100% 852px,100% 852px,100% 852px,100% 852px!important;background-position:0 0,0 -54px,0 -54px,0 -54px,0 -54px!important;background-repeat:repeat,no-repeat,no-repeat,no-repeat,no-repeat!important;background-blend-mode:multiply!important}
+/* Chromium paints backdrop-filter (glass) layers outside an overflow:hidden parent when that parent is scaled and rounded,
+   so bits of a sheet or the scrolled list showed above the phone. clip-path clips those layers too. */
+.ph{clip-path:inset(0 round 64px)}
+/* narrow screens: the round chip sits on its own line, so the title doesn't split as "Open" beside it */
+@media (max-width:700px){.bar h2 .wo{display:table;margin:0 0 8px}}
+/* a hidden toast keeps no visible layer at all */
+.toast:not(.show){visibility:hidden;transition:opacity .25s ease,transform .45s var(--spring,var(--e-spring)),visibility 0s linear .3s}
+.toast.show{visibility:visible;transition-delay:0s}
+/* narrow screens: while a toast shows, it takes the chip strip's place instead of sitting on top of it */
+@media (max-width:899px){.ph-hd{transition:opacity .2s ease}.toasting .ph-hd{opacity:0}.toast{top:74px}}
 /* ---------- page background: three faint ink glows drifting very slowly behind everything (about a minute per cycle).
    Low opacity so text contrast is unchanged; off for reduced motion and when printing. ---------- */
 body::before{content:"";position:fixed;inset:-25vmax;z-index:-1;pointer-events:none;
