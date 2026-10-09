@@ -71,7 +71,7 @@ The demo page is a five-minute game. You play the new committee head of a mock c
 
 Scenarios in the mock world: an unsent sponsor report the handover called done, a promise to a speaker, an airfare claim against policy, lead times, logins only the advisor holds, a settlement of accounts nobody owned (next year's grant is held), last year's sponsor exclusivity that a rival offer would break, a phishing email aimed at the agent, and a reply that arrives before a follow-up is approved.
 
-Build: `python web/build.py` composes `web/heir-demo.html` from `web/app2.html`, `web/game.js`, `web/ai.js`, `web/walk.js`, `web/wk.css` and `web/heir-engine.js` (set RISO_TOKENS and RISO_POSTER to the two design-system CSS files).
+Build: `python web/build.py` composes `web/heir-demo.html` from `web/app2.html`, `web/game.js`, `web/ai.js`, `web/walk.js`, `web/wk.css` and `web/heir-engine.js` and `web/glass.js`, with the two design-system stylesheets in `web/vendor/`. It writes three copies: `web/heir-demo.html` (the artifact), `web/heir-demo-local.html` (offline fallback) and `index.html` (GitHub Pages, the only one with portfolio links).
 
 ## Checks
 
