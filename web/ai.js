@@ -39,6 +39,8 @@ function panel() {
 function show() { G().setRight(panel() + `<div id="aiRest"></div>`); draw(); if ($("aiStop")) $("aiStop").onclick = () => ctl && ctl.abort(); }
 
 // ---- the tools Heir's model may use; every write is gated here, in code
+// cut long model text at a word, never mid-word, and say so with an ellipsis
+const clip = (v, n) => { const t = String(v ?? "").replace(/\s+/g, " ").trim(); if (t.length <= n) return t; const c = t.slice(0, n - 1); const k = c.lastIndexOf(" "); return (k > n * 0.6 ? c.slice(0, k) : c).replace(/[\s,;:.\-]+$/, "") + "…"; };
 function rowOut(r) { return { id: r.id, kind: r.kind, title: r.title, status: r.status, due: r.due, counterparty: r.counterparty, email: r.contact_email, detail: (r.detail || "").slice(0, 160), source: r.evidence.split(" ")[0] }; }
 const TOOLS = [
   { name: "search_ledger", description: "Search the club's ledger (debts, promises, deadlines, agreements, contacts, logins, lessons) by words. Returns up to 8 records with id, kind, title, status, due date, counterparty, email and source.",
@@ -55,8 +57,8 @@ const TOOLS = [
       const S = G().S, kind = KINDS.includes(i.kind) ? i.kind : "commitment";
       if (S.ledger.some((r) => norm(r.title) === norm(i.title))) { line("tool", `Skipped a duplicate: "${i.title}"`); return "already on record"; }
       S.series = 2;
-      const id = H.insert(S, "ledger", { kind, title: String(i.title).slice(0, 140), evidence: `forward:${n} (${S.meta.today})`, status: "open", tag: "reconfirm",
-        detail: `From a forward, read live: "${String(i.quote).slice(0, 160)}"`, counterparty: i.counterparty || null, contact_email: cur.from, owner: null,
+      const id = H.insert(S, "ledger", { kind, title: clip(i.title, 140), evidence: `forward:${n} (${S.meta.today})`, status: "open", tag: "reconfirm",
+        detail: `From a forward, read live: "${clip(i.quote, 200)}"`, counterparty: i.counterparty || null, contact_email: cur.from, owner: null,
         due: /^\d{4}-\d\d-\d\d$/.test(i.due || "") ? i.due : null, in_handover: 0, created_run: S.runId, updated_run: S.runId });
       S.series = 0;
       H.log(S, "Scout", "forward read live", `${id} ${i.title} (quote checked)`);
@@ -66,10 +68,10 @@ const TOOLS = [
     execute(i) { const S = G().S, r = S.ledger.find((x) => x.id === String(i.record_id));
       if (!r) { line("no", `Rejected a note: no record ${i.record_id}`); throw new Error("no such record"); }
       if (!quoteOk(i.quote)) { line("no", `Rejected a note on ${r.id}: quote not in the message`); throw new Error("quote not found in the message"); }
-      r.evidence += ` | forward:${n} (${S.meta.today})`; r.detail = `${r.detail ? r.detail + ". " : ""}Changed by a forward: ${String(i.note).slice(0, 140)}`; r.tag = "reconfirm";
+      r.evidence += ` | forward:${n} (${S.meta.today})`; r.detail = `${r.detail ? r.detail + ". " : ""}Changed by a forward: ${clip(i.note, 200)}`; r.tag = "reconfirm";
       H.log(S, "Auditor", "forward read live", `${r.id} noted: ${i.note}`);
-      line("ok", `Noted on ${r.id} (${r.title.slice(0, 48)}) · quote checked ✓`); return "noted"; } },
-  { name: "ask_head", description: "Ask the committee head to decide something only a person should decide. Give a short title, one sentence on why, and 2 or 3 concrete options. Needs an exact quote. Use at most once.",
+      line("ok", `Noted on ${r.id} (${clip(r.title, 60)}) · quote checked ✓`); return "noted"; } },
+  { name: "ask_head", description: "Ask the committee head to decide something only a person should decide. Give a short title (under 10 words), one or two sentences on why, and 2 or 3 concrete options of at most 8 words each. Needs an exact quote. Use at most once.",
     inputSchema: { type: "object", properties: { title: { type: "string" }, why: { type: "string" }, options: { type: "array", items: { type: "string" } }, record_id: { type: "string" }, quote: { type: "string" } }, required: ["title", "why", "options", "quote"] },
     execute(i) { if (!quoteOk(i.quote)) { line("no", "Rejected a question: quote not in the message"); throw new Error("quote not found in the message"); }
       const S = G().S, opts = (Array.isArray(i.options) ? i.options : []).map(String).filter(Boolean).slice(0, 3);
@@ -78,7 +80,7 @@ const TOOLS = [
       if (e) throw new Error("already asked; ask once");
       S.series = 2; H.escalate(S, "Committee head", String(i.why), "Question from a forward", "forward:" + n); S.series = 0;
       const esc2 = S.escalations[S.escalations.length - 1];
-      Object.assign(esc2, { ai: true, title: String(i.title).slice(0, 90), why: String(i.why).slice(0, 220), opts: opts.map((o) => o.slice(0, 48)) });
+      Object.assign(esc2, { ai: true, title: clip(i.title, 110), why: clip(i.why, 420), opts: opts.map((o) => clip(o, 90)) });
       line("ok", `Asked you: "${esc2.title}" · ${opts.length} options`); return "asked"; } },
   { name: "draft_message", description: "Draft one reply to someone outside the club who is waiting for an answer. It waits for a member to approve; nothing is sent by you. Only to an email address that is on record or the sender's. Needs an exact quote.",
     inputSchema: { type: "object", properties: { to: { type: "string" }, subject: { type: "string" }, body: { type: "string" }, reason: { type: "string" }, record_id: { type: "string" }, quote: { type: "string" } }, required: ["to", "subject", "body", "quote"] },
@@ -88,7 +90,7 @@ const TOOLS = [
       if (!quoteOk(i.quote)) { line("no", "Rejected a draft: quote not in the message"); throw new Error("quote not found in the message"); }
       if (/@campus\.example$/.test(to) && /\.20\d\d@/.test(to)) throw new Error("internal members are told in the app, not by email");
       S.series = 2;
-      const id = H.insert(S, "drafts", { kind: "external", recipient: to, subject: String(i.subject).slice(0, 110), body: String(i.body).slice(0, 1400), reason: String(i.reason || "From a forward, read live").slice(0, 160),
+      const id = H.insert(S, "drafts", { kind: "external", recipient: to, subject: clip(i.subject, 110), body: String(i.body).slice(0, 1400), reason: clip(i.reason || "From a forward, read live", 200),
         ledger_ref: S.ledger.some((r) => r.id === i.record_id) ? i.record_id : null, task_ref: null, status: "pending approval", needs_approval: 1, approved_by: null, sent_on: null, awaiting_reply: 0, created_run: S.runId, ai: true });
       S.series = 0;
       H.log(S, "Drafter", "draft for approval", `${id} to ${to}: ${i.subject} (from a forward, read live)`);

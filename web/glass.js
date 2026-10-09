@@ -121,17 +121,28 @@ function bindScroll() {
     lastY = y;
   }, { passive: true });
 }
-// a minimised tab bar opens again when tapped
+// the minimised tab bar is a small pill holding the current tab; tapping it opens the full bar again
 document.addEventListener("click", (e) => {
-  const bar = e.target.closest && e.target.closest("#tabs .tabbar.min");
-  if (bar) { bar.classList.remove("min"); }
+  const mini = e.target.closest && e.target.closest("#tabs .tab-mini");
+  if (mini) { const bar = document.querySelector("#tabs .tabbar"); if (bar) bar.classList.remove("min"); }
 }, true);
+function ensureMini() {
+  const tabs = document.getElementById("tabs"); if (!tabs) return;
+  const bar = tabs.querySelector(".tabbar"); let mini = tabs.querySelector(":scope > .tab-mini");
+  if (!bar) { if (mini) mini.remove(); return; }
+  const phs = document.getElementById("phs"); // nothing left to scroll (the list emptied): bring the full bar back
+  if (bar.classList.contains("min") && phs && phs.scrollHeight - phs.clientHeight < 24) bar.classList.remove("min");
+  if (!mini) { mini = document.createElement("button"); mini.type = "button"; mini.className = "tab-mini"; mini.setAttribute("aria-label", "Show all tabs"); tabs.appendChild(mini); }
+  const on = bar.querySelector("button.on") || bar.querySelector("button"); const html = on ? on.innerHTML : "";
+  if (mini.dataset.src !== html) { mini.innerHTML = html; mini.dataset.src = html; }
+  mini.tabIndex = bar.classList.contains("min") ? 0 : -1;
+}
 function ensureNav() {
   const ph = document.getElementById("ph"); if (!ph) return;
   let nav = ph.querySelector(":scope > .ph-nav");
   if (!nav) { nav = document.createElement("div"); nav.className = "ph-nav"; nav.setAttribute("aria-hidden", "true"); ph.appendChild(nav); }
   const head = document.querySelector("#phs .ph-head"), t = head ? (head.firstChild && head.firstChild.nodeType === 3 ? head.firstChild.textContent : head.textContent).trim() : "";
-  if (nav.textContent !== t) nav.textContent = t;
+  if (t && nav.textContent !== t) nav.textContent = t; // keep the old title while the pill fades out, so it never shrinks to an empty bubble
   if (!head) ph.classList.remove("titled");
 }
 
@@ -196,7 +207,7 @@ document.addEventListener("pointerdown", (e) => {
 let pending = false;
 function tick() {
   pending = false;
-  bindScroll(); ensureNav(); syncSheet(); wireLock(); enhanceAll();
+  bindScroll(); ensureNav(); ensureMini(); syncSheet(); wireLock(); enhanceAll();
 }
 new MutationObserver(() => { if (!pending) { pending = true; requestAnimationFrame(tick); } })
   .observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "data-mode"] });

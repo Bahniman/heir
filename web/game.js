@@ -83,7 +83,10 @@ function countUp(el, to, ms) {
   el.textContent = "0"; requestAnimationFrame(step);
 }
 function closeModal(m) { if (!m || m.classList.contains("out")) return; m.classList.add("out"); setTimeout(() => m.remove(), 180); }
-function toast(m, good) { const t = $("toast"); t.textContent = m; t.className = "toast show" + (good ? " good" : ""); clearTimeout(toast.h); toast.h = setTimeout(() => (t.className = "toast"), 2600); }
+function toast(m, good) { const t = $("toast");
+  // a new message while one is showing: let the old one drop away first instead of resizing it in place
+  if (t.classList.contains("show") && t.textContent !== m && !REDUCED) { t.className = "toast"; clearTimeout(toast.h); clearTimeout(toast.n); toast.n = setTimeout(() => toast(m, good), 200); return; }
+  t.textContent = m; t.className = "toast show" + (good ? " good" : ""); clearTimeout(toast.h); toast.h = setTimeout(() => (t.className = "toast"), 2600); }
 function burst() { const b = document.createElement("div"); b.className = "burst"; b.innerHTML = Array.from({ length: 28 }, (_, i) => `<i style="--a:${i * 360 / 28}deg;--d:${90 + (i % 5) * 34}px;--c:${["#ff4fa3", "#1f5cff", "#ffe14f", "#1d1a16"][i % 4]}"></i>`).join(""); document.body.appendChild(b); setTimeout(() => b.remove(), 1200); }
 
 // 0. landing
@@ -263,10 +266,28 @@ function setup3() {
   bindSkip();
 }
 function setup4() {
-  const apps = ["Phone", "Mail", "Maps", "Photos", "Camera", "Notes", "Clock", "Calendar", "Music", "Weather", "Settings"];
+  // generic glyphs on coloured tiles: they read as "a phone's home screen" without copying anyone's real icons
+  const I = (p) => `<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+  const GL = {
+    Maps: ["#34c77b,#1f9d5c", I('<path d="M12 21s-6-5.6-6-10a6 6 0 1 1 12 0c0 4.4-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>')],
+    Photos: ["#fff,#f2f2f7", I('<g stroke="none"><circle cx="12" cy="7.2" r="3.2" fill="#ffcc00"/><circle cx="16.6" cy="10.6" r="3.2" fill="#ff9500" opacity=".85"/><circle cx="14.8" cy="15.8" r="3.2" fill="#ff3b30" opacity=".8"/><circle cx="9.2" cy="15.8" r="3.2" fill="#af52de" opacity=".8"/><circle cx="7.4" cy="10.6" r="3.2" fill="#0a84ff" opacity=".8"/></g>')],
+    Notes: ["#fff7c2,#ffe36b", I('<path d="M6 8h12M6 12h12M6 16h8" stroke="#8a6d00"/>')],
+    Clock: ["#1c1c1e,#000", I('<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2" stroke="#ff9f0a"/>')],
+    Calendar: ["#fff,#f2f2f7", `<span class="cal"><b>Thu</b>20</span>`],
+    Weather: ["#5ac8fa,#1f6fff", I('<circle cx="9" cy="9" r="3.4" fill="#ffd60a" stroke="none"/><path d="M8 18h9a3.2 3.2 0 0 0 0-6.4 4.4 4.4 0 0 0-8.4 1.2A2.6 2.6 0 0 0 8 18z" fill="#fff" stroke="none"/>')],
+    Settings: ["#aeaeb2,#6e6e73", I('<circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M6 18l1.6-1.6M16.4 7.6 18 6"/>')],
+  };
+  const DOCK = {
+    Phone: ["#5ee07a,#28c745", I('<path d="M7.5 4.5 10 7.6 8.7 9.8a10 10 0 0 0 5.5 5.5l2.2-1.3 3.1 2.5-1.2 2.6c-.4.8-1.3 1.2-2.2 1A15 15 0 0 1 4 7.9c-.2-.9.2-1.8 1-2.2z" fill="#fff" stroke="none"/>')],
+    Mail: ["#5ac8fa,#0a84ff", I('<rect x="4" y="6.5" width="16" height="11" rx="2"/><path d="m4.8 7.5 7.2 5.5 7.2-5.5"/>')],
+    Camera: ["#d1d1d6,#8e8e93", I('<rect x="3.5" y="7" width="17" height="11.5" rx="3"/><circle cx="12" cy="12.7" r="3.4"/><path d="M9 7l1.2-2h3.6L15 7"/>')],
+    Music: ["#ff6482,#ff2d55", I('<path d="M10 17.5V6.5l8-1.8v10.5"/><circle cx="8" cy="17.5" r="2.2" fill="#fff"/><circle cx="16" cy="15.2" r="2.2" fill="#fff"/>')],
+  };
+  const tile = (a, [bg, glyph]) => `<span><i class="gi" style="--g:linear-gradient(160deg,${bg})">${glyph}</i>${a}</span>`;
   device({ scr: "setup", chip: "Home screen", time: "18:42", mode: "home", anim: "fade",
     left: setH(4, "Heir is now an app on your phone", "It's the same website, now full screen with its own icon. Tap it to open."),
-    phone: `<div class="home"><div class="hg">${apps.map((a) => `<span><i></i>${a}</span>`).join("")}<button type="button" class="hz" id="t4"><i></i>Heir</button></div></div>`,
+    phone: `<div class="home"><div class="hg">${Object.entries(GL).map(([a, v]) => tile(a, v)).join("")}<button type="button" class="hz" id="t4"><i><b></b></i>Heir</button></div>
+      <div class="dock">${Object.entries(DOCK).map(([a, v]) => tile(a, v).replace(/<\/i>[^<]*<\/span>/, "</i></span>")).join("")}</div></div>`,
     right: spn("What it is", "<p>One website works on every phone and laptop, so nobody waits for an app store review and the club doesn't have to look after two apps.</p>") });
   $("t4").onclick = setup5; bindSkip();
 }
@@ -335,10 +356,20 @@ function sideR() {
   h += `<div class="zero sm"><b>0</b><span>emails sent without a tap</span><p>${sent} sent so far, and a person approved every one.</p></div>`;
   return h;
 }
+// new content changes a panel's height: glide from the height on screen now to the new one (and retarget if it changes again mid-way)
+function morph(el, apply) {
+  if (REDUCED || !el.isConnected) { apply(); return; }
+  const h0 = el.getBoundingClientRect().height; if (el.__m) el.__m.cancel();
+  apply();
+  const h1 = el.getBoundingClientRect().height; if (Math.abs(h1 - h0) < 2) return;
+  el.style.overflow = "clip";
+  el.__m = el.animate([{ height: h0 + "px" }, { height: h1 + "px" }], { duration: Math.min(520, 260 + Math.abs(h1 - h0) * 0.6), easing: "cubic-bezier(.22,1,.36,1)" });
+  el.__m.onfinish = el.__m.oncancel = () => { el.__m = null; el.style.overflow = ""; };
+}
 function swapIn(el, html) {
   if (!el || el.__h === html) return;
   const had = el.__h !== undefined || el.innerHTML.trim() !== "" || html.trim() !== ""; // content arriving in an empty slot fades in too
-  el.innerHTML = html; el.__h = html;
+  morph(el, () => { el.innerHTML = html; }); el.__h = html;
   if (had && !REDUCED) { el.classList.remove("swapin"); void el.offsetWidth; el.classList.add("swapin"); }
 }
 function sides() { if ($("sideL") && S.meta.today && !welcome) swapIn($("sideL"), dayPanel()); if ($("sideR") && !welcome && !(window.HeirAI && window.HeirAI.busy)) swapIn($("sideR"), (window.HeirAI ? window.HeirAI.panel() : "") + sideR()); }
@@ -379,9 +410,17 @@ function paint() {
   const label = TABS.find((t) => t[0] === tabNow)[1];
   $("dchip").textContent = "Heir app · " + label;
   const n = pending().length;
-  const keepY = paint.tab === tabNow ? $("phs").scrollTop : 0; paint.tab = tabNow;
+  const same = paint.tab === tabNow, keepY = same ? $("phs").scrollTop : 0; paint.tab = tabNow;
+  // cards that stay on screen glide to their new place when others arrive or leave, instead of jumping (FLIP)
+  const key = (c) => c.dataset.card || (c.querySelector("[data-a],[data-d],[data-card]") || {}).dataset?.a || (c.querySelector("b") || c).textContent.slice(0, 60);
+  const before = new Map(); if (same && !REDUCED) $("phs").querySelectorAll(".ph-card, .ph-head").forEach((c) => before.set(key(c), c.getBoundingClientRect().top));
   $("phs").innerHTML = tabNow === "today" ? today() : tabNow === "ledger" ? ledgerView() : tabNow === "plan" ? planView() : logView();
   $("phs").scrollTop = keepY;
+  const zs = $("phs").getBoundingClientRect().height / ($("phs").offsetHeight || 1) || 1; // the phone is scaled to fit: convert screen px to its own px
+  if (before.size) $("phs").querySelectorAll(".ph-card, .ph-head").forEach((c) => { const k = key(c); if (!before.has(k)) return;
+    const dy = (before.get(k) - c.getBoundingClientRect().top) / zs; if (Math.abs(dy) < 1) return;
+    c.classList.remove("new"); c.style.animation = "none";
+    c.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], { duration: 460, easing: "cubic-bezier(.22,1,.36,1)" }); });
   $("phs").querySelectorAll(".new").forEach((e, i) => e.style.setProperty("--d", 40 + i * 70 + "ms"));
   const ti = TABS.findIndex((t) => t[0] === tabNow), nav = $("tabs").querySelector(".tabbar");
   if (nav) { nav.style.setProperty("--ti", ti); nav.querySelectorAll("[data-t]").forEach((b, i) => { b.classList.toggle("on", i === ti); const bd = b.querySelector("b"); if (b.dataset.t === "today") { if (n) { if (bd) bd.textContent = n; else b.insertAdjacentHTML("beforeend", `<b>${n}</b>`); } else if (bd) bd.remove(); } }); }
@@ -406,7 +445,7 @@ function today() {
   const qq = S.escalations.filter((e) => e.status === "open").sort(aiFirst), ds = S.drafts.filter((d) => d.status === "pending approval").sort(aiFirst);
   const n = qq.length + ds.length;
   const qc = (e) => `<div class="ph-card q ${e.ai ? "ai" : ""}${nw(e.id)}"><span class="ph-tag">${e.ai ? "You decide · from your forward" : "You decide"}</span><b>${esc(qt(e))}</b><p>${esc(qs(e))}</p>
-      <div class="ph-acts">${ans(e).map(([l], i) => `<button type="button" class="${i ? "" : "pri"}" data-a="${e.id}" data-i="${i}">${esc(l)}</button>`).join("")}</div></div>`;
+      <div class="ph-acts${ans(e).some(([l]) => l.length > 24) ? " long" : ""}">${ans(e).map(([l], i) => `<button type="button" class="${i ? "" : "pri"}" data-a="${e.id}" data-i="${i}">${esc(l)}</button>`).join("")}</div></div>`;
   const dc = (d) => `<div class="ph-card m ${d.ai ? "ai" : ""}${nw(d.id)}" data-card="${d.id}"><span class="ph-tag">${d.ai ? "Ready to send · drafted live" : "Ready to send"}</span><b>${esc(d.subject)}</b><p>To ${esc(nameOf(d.recipient))} · ${esc(why(d))}</p>
       <details><summary>Read it</summary><pre data-body="${d.id}">${esc(d.body)}</pre></details>
       <div class="ph-acts"><button type="button" class="pri" data-ok="${d.id}">Approve and send</button><button type="button" data-edit="${d.id}">Edit</button><button type="button" data-hold="${d.id}">Hold</button></div>
@@ -599,7 +638,8 @@ function end() {
     <p class="lede">Next April you graduate too. What will the next head inherit?</p>
     <div class="act"><button class="pk-btn pri" id="b6" type="button">Write their handover</button><button class="pk-btn" id="b7" type="button">Play again</button></div><div id="doc"></div></div>`);
   // the button stays where it is (removing it pulled "Play again" up under the pointer)
-  $("b6").onclick = () => { const b = $("b6"); b.disabled = true; b.textContent = "Their handover is below ↓"; handover(); };
+  $("b6").onclick = () => { const b = $("b6"), w0 = b.offsetWidth; b.disabled = true; b.textContent = "Their handover is below ↓";
+    if (!REDUCED) b.animate([{ width: w0 + "px" }, { width: b.offsetWidth + "px" }], { duration: 320, easing: "cubic-bezier(.22,1,.36,1)" }); handover(); };
   $("b7").onclick = () => { curScr = null; land(); };
 }
 function handover() {
@@ -648,7 +688,7 @@ function hideCoach(now) {
   if ($("nextBox")) $("nextBox").classList.remove("on");
 }
 function showCoach() {
-  if (!cand || !document.body.contains(cand)) return;
+  if (!cand || !document.body.contains(cand) || cand.disabled) return; // never point at a button that cannot be pressed
   if (!coachEl) { coachEl = document.createElement("div"); coachEl.className = "coach"; coachEl.setAttribute("role", "status"); document.body.appendChild(coachEl); }
   shown = true; coachT = cand; cand.classList.add("tapme");
   clearTimeout(hideCoach.t);
@@ -679,6 +719,19 @@ function placeCoach() {
   const cx = Math.max(8, Math.min(innerWidth - w - 8, x));
   if (cx !== x && (side === "left" || side === "right")) { side = r.top > h + 90 ? "above" : "below"; y = side === "above" ? r.top - h - gap : r.bottom + gap; }
   x = cx;
+  // never sit on another control or on text: score each side by what it would cover (controls count far more than text), take the least
+  const vis = (e) => e !== coachT && !coachT.contains(e) && !e.contains(coachT) && e.getClientRects().length && getComputedStyle(e).visibility !== "hidden";
+  const rects = (sel) => [...document.querySelectorAll(sel)].filter(vis).map((e) => e.getBoundingClientRect()).filter((q) => q.width && q.bottom > 0 && q.top < innerHeight);
+  const ctrls = rects("button, a[href], .card, summary, .dchip, .nextbox.on"), texts = rects("h1, h2, h3, p, .k, .stamp, li, .tile");
+  const over = (px, py, list) => list.reduce((sum, q) => sum + Math.max(0, Math.min(px + w, q.right + 4) - Math.max(px, q.left - 4)) * Math.max(0, Math.min(py + h, q.bottom + 4) - Math.max(py, q.top - 4)), 0);
+  const cost = (px, py) => (py < 60 || py + h > innerHeight - 6 ? 1e9 : 0) + over(px, py, ctrls) * 10 + over(px, py, texts);
+  let best = cost(x, y);
+  if (best > 0) {
+    const at = { right: [r.right + gap, r.top + r.height / 2 - h / 2], left: [r.left - gap - w, r.top + r.height / 2 - h / 2],
+      below: [r.left + r.width / 2 - w / 2, r.bottom + gap], above: [r.left + r.width / 2 - w / 2, r.top - h - gap] };
+    for (const k of ["below", "above", "right", "left"]) { const px = Math.max(8, Math.min(innerWidth - w - 8, at[k][0])), py = at[k][1], c = cost(px, py);
+      if (c < best) { best = c; side = k; x = px; y = py; } }
+  }
   moveCoach(x, y); coachEl.dataset.side = side;
   coachEl.style.setProperty("--ax", Math.max(14, Math.min(w - 14, r.left + r.width / 2 - x)) + "px");
 }
@@ -713,7 +766,7 @@ function nextStep() {
     const card = $("phs").querySelector(".ph-card.q .ph-acts button, .ph-card.m [data-ok]");
     if (card && tabNow !== "today") return setCand($("tabs").querySelector('[data-t="today"]'), "Back to Today");
     if (card) return setCand(card, card.dataset.ok ? "Read it, then approve" : "Pick an answer");
-    if (!aiTried && di >= 1 && $("aiBtn")) return setCand($("aiBtn"), "Try this: give Heir something it's never seen");
+    if (!aiTried && di >= 1 && $("aiBtn")) return setCand($("aiBtn"), "Try this: give Heir something new");
     if ($("b5")) return setCand($("b5"), di >= DAYS.length - 1 ? "See how it went" : "Sleep to the next morning");
   }
   return setCand(null);
@@ -747,7 +800,7 @@ $("restartBtn").onclick = () => { clearInterval(timer); document.querySelectorAl
 $("howClose").onclick = () => { $("drawer").classList.remove("open"); $("drawer").setAttribute("aria-hidden", "true"); };
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") { document.querySelectorAll(".modal").forEach(closeModal); $("howClose").click(); } });
 window.HeirGame = { land, hand, search, score, end, how, tab, pin: (k) => pins.add(k),
-  get S() { return S; }, paint, toast, burst, setRight: (h) => { if ($("sideR")) $("sideR").innerHTML = h; }, sides, sheet, closeSheet, nameOf, fmt, esc };
+  get S() { return S; }, paint, toast, burst, setRight: (h) => { const r = $("sideR"); if (r && r.__h !== h) { morph(r, () => { r.innerHTML = h; }); r.__h = h; } }, sides, sheet, closeSheet, nameOf, fmt, esc };
 // the first screen waits (at most 1.5 s) for the web fonts, so its text does not re-wrap and shift once they arrive
 // fonts load lazily, so ask for the three the first screen uses rather than waiting on document.fonts.ready
 if (document.fonts && document.fonts.load) Promise.race([Promise.all(['800 40px "Bricolage Grotesque"', '400 20px "Newsreader"', '400 15px "Space Mono"', '700 12px "Space Mono"'].map((f) => document.fonts.load(f))).catch(() => {}),
