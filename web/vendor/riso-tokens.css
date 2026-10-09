@@ -1,0 +1,41 @@
+/* Riso Poster design system: tokens.
+   Cream paper, ink outlines, two overprinted inks (blue, pink) and a yellow sticker.
+   Inks overlap with multiply on paper and screen on the dark theme. */
+:root{
+  --paper:#f3ecdf;--card:#fffaf1;--hover:#f1e7d6;--cont:#ebe1cf;
+  --ink:#1d1a16;--body:#3a342c;--sec:#665e52;--muted:#8a8172;
+  --line:rgba(29,26,22,.14);--line-2:rgba(29,26,22,.3);
+  --blue:#1f5cff;--blue-fill:#1f5cff;--pink:#ff4fa3;--yellow:#ffe14f;--on-blue:#fffaf1;
+  --tan:#c81d72;--tan-bg:rgba(255,79,163,.14);--blue-text:var(--emer);--pink-display:#e83e94;
+  --emer:#184cde;--emer-l:#1f5cff;--emer-bg:rgba(31,92,255,.12);
+  --amber:#6f5200;--amber-l:#e0b400;--amber-bg:rgba(255,225,79,.5);
+  --rose:#b81766;--rose-l:#ff4fa3;--rose-bg:rgba(255,79,163,.16);
+  --shc:#1d1a16;--sh:6px 6px 0 var(--shc);--bw:2.5px;--blend:multiply;
+  --canvas:var(--paper);--surface:var(--card);
+  --sans:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --mono:"Space Mono",ui-monospace,Consolas,monospace;
+  --top:68px;--max:1240px;--gut:clamp(16px,4vw,40px);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#191613;--card:#231f1b;--hover:#2c2722;--cont:#2a2520;
+  --ink:#f3ecdf;--body:#d9d0c1;--sec:#aa9f8f;--muted:#857b6d;
+  --line:rgba(243,236,223,.14);--line-2:rgba(243,236,223,.3);
+  --blue:#4f7dff;--pink:#ff6db5;--tan:#ff8cc4;--tan-bg:rgba(255,109,181,.16);--pink-display:var(--pink);
+  --emer:#8fb0ff;--emer-l:#4f7dff;--emer-bg:rgba(79,125,255,.18);
+  --amber:#ffe14f;--amber-l:#ffe14f;--amber-bg:rgba(255,225,79,.14);
+  --rose:#ff9ccd;--rose-l:#ff6db5;--rose-bg:rgba(255,109,181,.16);
+  --shc:#ff6db5;--blend:screen;color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#191613;--card:#231f1b;--hover:#2c2722;--cont:#2a2520;
+  --ink:#f3ecdf;--body:#d9d0c1;--sec:#aa9f8f;--muted:#857b6d;
+  --line:rgba(243,236,223,.14);--line-2:rgba(243,236,223,.3);
+  --blue:#4f7dff;--pink:#ff6db5;--tan:#ff8cc4;--tan-bg:rgba(255,109,181,.16);--pink-display:var(--pink);
+  --emer:#8fb0ff;--emer-l:#4f7dff;--emer-bg:rgba(79,125,255,.18);
+  --amber:#ffe14f;--amber-l:#ffe14f;--amber-bg:rgba(255,225,79,.14);
+  --rose:#ff9ccd;--rose-l:#ff6db5;--rose-bg:rgba(255,109,181,.16);
+  --shc:#ff6db5;--blend:screen;color-scheme:dark;
+}

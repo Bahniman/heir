@@ -1,8 +1,8 @@
 """Compose the published single-file demo: the game first, the walkthrough in a drawer."""
 import os, pathlib, re
 here = pathlib.Path(__file__).parent
-tokens = pathlib.Path(os.environ.get("RISO_TOKENS", r"C:\Users\bahni\Downloads\Projects\Startup Lab\repos\heirloom\src\riso-tokens.css")).read_text(encoding="utf-8")
-poster = pathlib.Path(os.environ.get("RISO_POSTER", r"C:\Users\bahni\Downloads\Exports\Design Systems\Riso Poster\project-kit\poster.css")).read_text(encoding="utf-8")
+tokens = pathlib.Path(os.environ.get("RISO_TOKENS", here / "vendor" / "riso-tokens.css")).read_text(encoding="utf-8")
+poster = pathlib.Path(os.environ.get("RISO_POSTER", here / "vendor" / "poster.css")).read_text(encoding="utf-8")
 r = lambda n: (here / n).read_text(encoding="utf-8")
 out = (r("app2.html").replace("/*TOKENS*/", tokens).replace("/*POSTER*/", poster).replace("/*WKCSS*/", r("wk.css"))
        .replace("/*ENGINE*/", r("heir-engine.js")).replace("/*WALKJS*/", r("walk.js")).replace("/*GAMEJS*/", r("game.js")).replace("/*AIJS*/", r("ai.js")).replace("/*GLASSJS*/", r("glass.js")))
